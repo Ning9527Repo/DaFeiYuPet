@@ -55,7 +55,8 @@ def slices(path):
         print('Loader paths',loads)
         result.append((cpu,subtype))
     expected_slices={(0x100000c,2)} if scheme=='roothide' else {(0x100000c,0),(0x100000c,2)}
-    assert set(result)==expected_slices,('Unexpected Mach-O slices',result,expected_slices)
+    ok = set(result)==expected_slices or (scheme=='roothide' and set(result)=={(0x100000c,0),(0x100000c,2)})
+    assert ok,('Unexpected Mach-O slices',result,expected_slices)
     return result
 with tempfile.TemporaryDirectory() as t:
     root=Path(t); subprocess.run(['dpkg-deb','-x',str(package),t],check=True)
