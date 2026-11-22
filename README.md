@@ -10,7 +10,7 @@
 - 大小 120/180/240/300pt、透明度 20–100%、仅主屏幕/主屏幕与前台 App 两种范围；锁屏始终隐藏（安全策略，不提供锁屏展示开关）。旋转/尺寸变化重新夹取边界。
 - 四种动画 × 120 PNG 帧，220×124，约 12.5fps，来自上游已有透明 GIF 预览。**480 帧全部逐帧验证 alpha 含 0 和 255**；不是不透明视频黑底、不是 WebM 冒充 MOV。GIF 原有二值 alpha、分辨率较低，细节不及原 640×360 WebM。
 - 单张当前帧 + 最多一个异步解码任务，串行后台队列；不批量 UIImageView.animationImages、无整段预解码。关闭/锁屏/范围外销毁窗口、清空图片并 invalidate displaylink；无 AVPlayer，自然无视频播放器残留。
-- 原生 AI 聊天**在设置进程的 PreferenceBundle 页面**：主动输入 ≤2048 UTF-16 单位，OpenAI 兼容 HTTPS Base URL/模型，Keychain 保存/删除 Key。单请求、可取消、请求30秒/资源35秒、响应上限64KiB、回复显示最多4096单位、max_tokens=256、无历史、离页取消并清文本。拒绝重定向，不降级明文存 Key，不记录 Key/对话或网络详情。
+- 原生 AI 聊天**在设置进程的 PreferenceBundle 页面**：主动输入 ≤2048 UTF-16 单位，OpenAI 兼容 HTTPS Base URL/模型，Keychain 保存/删除 Key。单请求、可取消、请求90秒/资源95秒、响应上限64KiB、回复显示最多4096单位、max_tokens=256、无历史、离页取消并清文本。拒绝重定向，不降级明文存 Key，不记录 Key/对话或网络详情。
 
 ## 边界与未做项
 

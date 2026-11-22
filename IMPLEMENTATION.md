@@ -34,7 +34,7 @@
 - 聊天与 Keychain 全部在 PreferenceBundle 页面，即**设置进程**；SpringBoard 插件不链接 Security，不含网络请求、文本输入控件或对话存储。
 - 支持 OpenAI 兼容 HTTPS Base URL/模型，默认 api.openai.com/v1 与 gpt-4o-mini；URL要求无user/password/query/fragment，Base URL≤2048、模型1–128，拒绝HTTP和所有重定向，防Authorization跨域转发。
 - Key只保存到插件专属 Keychain service/account，WhenUnlockedThisDeviceOnly；支持删除，存储失败不回退明文。不读取已有Key显示在界面。网络错误仅泛化状态，不记录Key、请求、回复或服务端错误正文。
-- 主动输入≤2048 UTF-16单位、max_tokens=256、非流式、单活动请求；新请求取消旧请求，可手动取消，离页取消/清输入和回复；请求30秒、资源35秒；累计响应超过64KiB取消；格式校验后最多显示4096单位。使用 ephemeral NSURLSession，无历史/cookie/cache，网络不在SpringBoard执行。
+- 主动输入≤2048 UTF-16单位、max_tokens=256、非流式、单活动请求；新请求取消旧请求，可手动取消，离页取消/清输入和回复；请求90秒、资源95秒；累计响应超过64KiB取消；格式校验后最多显示4096单位。使用 ephemeral NSURLSession，无历史/cookie/cache，网络不在SpringBoard执行。
 - 聊天页面使用 UIScrollView + keyboardLayoutGuide，减少小屏键盘挡发送按钮的问题。
 - 明确未实现：独立helper App/XPC服务、从宠物直接呼出聊天、AI回复跨进程同步到宠物气泡。当前气泡只是本地预设台词；这样避免为首次预览引入 SpringBoard keyWindow 抢占、额外IPC和helper entitlement风险。Keychain权限和真实服务连通性均尚未真机验证。
 

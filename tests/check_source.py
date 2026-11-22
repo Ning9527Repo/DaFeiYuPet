@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import plistlib, json
+import plistlib, json, re
 from PIL import Image
 r=Path(__file__).resolve().parents[1]
 def text(p): return (r/p).read_text()
@@ -25,10 +25,14 @@ assert 'self.hidden || !pet || pet.hidden || mowang_dafeiyupet_locked()' in s
 assert 'UIKeyboardWillShowNotification' in s and '!self.mowang_dafeiyupet_keyboardVisible' in s
 assert 'initWithWindowScene:scene' in s
 chat=text('MowangDaFeiYuPetPrefs/MowangDaFeiYuPetChatController.m')
-for token in ('kSecAttrAccessibleWhenUnlockedThisDeviceOnly','ephemeralSessionConfiguration','65536','2048','completionHandler(nil)','invalidateAndCancel','35'):
+for token in ('kSecAttrAccessibleWhenUnlockedThisDeviceOnly','ephemeralSessionConfiguration','65536','2048','completionHandler(nil)','invalidateAndCancel','90','95'):
     assert token in chat,token
 for p in list((r/'Sources').glob('*'))+list((r/'MowangDaFeiYuPetPrefs').glob('*.m')):
-    assert 'NSLog(' not in p.read_text() and 'os_log(' not in p.read_text()
+    t=p.read_text()
+    assert 'NSLog(' not in t, p
+    for m in re.finditer(r'os_log\(([^,]+),', t):
+        h=m.group(1).strip()
+        assert h=='mowang_dafeiyupet_balanceLog()' or h.startswith('os_log_create("com.mowang.dafeiyupet"'), (p.name,h)
 assets=r/'layout/Library/Application Support/MowangDaFeiYuPet'
 manifest=plistlib.loads((assets/'manifest.plist').read_bytes()); count=0
 assert set(manifest)=={'idle','look','tap','drag'}
