@@ -27,8 +27,8 @@ def slices(path):
             cmd,size=struct.unpack_from('<II',data,pos); assert size>=8
             if cmd==0x32:
                 platform,minos,sdk=struct.unpack_from('<III',data,pos+8)
-                assert platform==2 and minos==0x00100000,('Expected iOS 16.0 minimum',platform,hex(minos))
-                print('LC_BUILD_VERSION min=16.0 SDK=%d.%d.%d'%((sdk>>16)&65535,(sdk>>8)&255,sdk&255))
+                assert platform==2 and minos==0x000f0000,('Expected iOS 15.0 minimum',platform,hex(minos))
+                print('LC_BUILD_VERSION min=15.0 SDK=%d.%d.%d'%((sdk>>16)&65535,(sdk>>8)&255,sdk&255))
                 deployment=True
             if cmd in (0xc,0x8000001c,0xd):
                 rel=struct.unpack_from('<I',data,pos+8)[0]
