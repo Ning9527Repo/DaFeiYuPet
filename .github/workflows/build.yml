@@ -54,6 +54,13 @@ jobs:
         run: |
           set -euo pipefail
           sh build.sh '${{ matrix.scheme }}' 2>&1 | tee build/compile.txt
+      - name: Fix self-reference dependency and re-sign
+        shell: bash
+        run: |
+          set -euo pipefail
+          for deb in packages/*.deb; do
+            python3 scripts/fix_selfref_deps.py "$deb"
+          done 2>&1 | tee build/depfix.txt
       - name: Validate actual package
         shell: bash
         run: |
