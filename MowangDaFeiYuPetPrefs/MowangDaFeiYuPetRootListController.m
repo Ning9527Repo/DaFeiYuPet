@@ -2,6 +2,7 @@
 #import "MowangDaFeiYuPetPreferences.h"
 #import "MowangDaFeiYuPetEnvironment.h"
 #import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
 @interface PSSpecifier (MowangDaFeiYuPetButton)
 @property (nonatomic, assign) SEL buttonAction;
 @end
