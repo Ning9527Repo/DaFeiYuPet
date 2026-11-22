@@ -15,11 +15,19 @@ def slices(path):
     data=path.read_bytes(); magic=struct.unpack_from('>I',data)[0]
     if magic==0xcafebabe:
         n=struct.unpack_from('>I',data,4)[0]
-        offsets=[struct.unpack_from('>IIIII',data,8+20*i)[2] for i in range(n)]
-    else: offsets=[0]
+        regions=[struct.unpack_from('>IIIII',data,8+20*i)[2:4] for i in range(n)]
+    else: regions=[(0,len(data))]
     result=[]
-    for offset in offsets:
+    for offset,length in regions:
         h=struct.unpack_from('<IIIIIIII',data,offset)
+        image=data[offset:offset+length]
+        if scheme=='roothide':
+            assert b'.jbroot-' in image,('Missing dynamic RootHide resource root',path)
+            assert b'/var/jb\x00' not in image,('Fixed rootless path in RootHide image',path)
+        else:
+            assert b'/var/jb\x00' in image,('Missing rootless resource root',path)
+        if (h[2]&0xffffff)==2:
+            assert h[2]==0x80000002,('Missing real arm64e ptrauth ABI',hex(h[2]))
         assert h[0]==0xfeedfacf
         cpu,subtype,ncmds=h[1],h[2]&0xffffff,h[4]
         pos=offset+32; signed=False; deployment=False; loads=[]
@@ -30,9 +38,12 @@ def slices(path):
                 assert platform==2 and minos==0x000f0000,('Expected iOS 15.0 minimum',platform,hex(minos))
                 print('LC_BUILD_VERSION min=15.0 SDK=%d.%d.%d'%((sdk>>16)&65535,(sdk>>8)&255,sdk&255))
                 deployment=True
-            if cmd in (0xc,0x8000001c,0xd):
+            if cmd in (0xc,0x80000018,0x8000001f,0x20,0x80000023):
                 rel=struct.unpack_from('<I',data,pos+8)[0]
                 loads.append(data[pos+rel:pos+size].split(b'\0')[0].decode())
+            if cmd==0xd:
+                rel=struct.unpack_from('<I',data,pos+8)[0]
+                print('LC_ID_DYLIB (image identity)',data[pos+rel:pos+size].split(b'\0')[0].decode())
             if cmd==0x1d:
                 blob,size2=struct.unpack_from('<II',data,pos+8)
                 assert size2>0 and offset+blob+size2<=len(data)
@@ -51,7 +62,7 @@ def slices(path):
         assert deployment,'Missing iOS LC_BUILD_VERSION'
         if path.suffix=='.dylib':
             if scheme=='roothide': assert '@loader_path/.jbroot/usr/lib/libsubstrate.dylib' in loads
-            else: assert '/var/jb/usr/lib' in loads
+            else: assert '/var/jb/usr/lib/libsubstrate.dylib' in loads
         print('Loader paths',loads)
         result.append((cpu,subtype))
     expected_slices={(0x100000c,2)} if scheme=='roothide' else {(0x100000c,0),(0x100000c,2)}

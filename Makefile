@@ -1,13 +1,7 @@
 DEBUG = 0
 FINALPACKAGE = 1
 
-# Match upstream apelin build: roothide is single-slice arm64e,
-# rootless keeps dual-slice FAT (arm64 + arm64e).
-ifeq ($(THEOS_PACKAGE_SCHEME),roothide)
-ARCHS = arm64e
-else
 ARCHS = arm64 arm64e
-endif
 
 # Share the SDK and deployment targets with the PreferenceBundle.
 include MowangDaFeiYuPetBuild.mk

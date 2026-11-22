@@ -1,6 +1,15 @@
 name: DaFeiYuPet preview build
 on:
   workflow_dispatch:
+    inputs:
+      scheme:
+        description: Package target
+        type: choice
+        default: both
+        options:
+          - both
+          - roothide
+          - rootless
 permissions:
   contents: read
 jobs:
@@ -9,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scheme: [rootless, roothide]
+        scheme: ${{ fromJSON(inputs.scheme == 'roothide' && '["roothide"]' || inputs.scheme == 'rootless' && '["rootless"]' || '["rootless","roothide"]') }}
     env:
       THEOS: /tmp/dafeiyupet-theos
     steps:
@@ -49,18 +58,12 @@ jobs:
           cc -Wall -Wextra -Werror tests/Physics.c -lm -o /tmp/dafeiyupet-physics
           /tmp/dafeiyupet-physics | tee build/physics.txt
           python3 tests/check_source.py | tee build/contracts.txt
+          python3 tests/check_bootstrap.py | tee build/bootstrap-paths.txt
       - name: Compile and package
         shell: bash
         run: |
           set -euo pipefail
           sh build.sh '${{ matrix.scheme }}' 2>&1 | tee build/compile.txt
-      - name: Fix self-reference dependency and re-sign
-        shell: bash
-        run: |
-          set -euo pipefail
-          for deb in packages/*.deb; do
-            python3 scripts/fix_selfref_deps.py "$deb"
-          done 2>&1 | tee build/depfix.txt
       - name: Validate actual package
         shell: bash
         run: |
