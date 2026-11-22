@@ -50,7 +50,7 @@ def slices(path):
         assert signed,'Missing LC_CODE_SIGNATURE or embedded signature'
         assert deployment,'Missing iOS LC_BUILD_VERSION'
         if path.suffix=='.dylib':
-            if scheme=='roothide': assert '@loader_path/.jbroot/usr/lib/libroothide.dylib' in loads
+            if scheme=='roothide': assert '@loader_path/.jbroot/usr/lib/libsubstrate.dylib' in loads
             else: assert '/var/jb/usr/lib' in loads
         print('Loader paths',loads)
         result.append((cpu,subtype))
