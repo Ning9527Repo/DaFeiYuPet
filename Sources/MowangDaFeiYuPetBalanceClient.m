@@ -1,5 +1,6 @@
 #import "MowangDaFeiYuPetBalance.h"
 #import <Security/Security.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <os/log.h>
 
 static os_log_t mowang_dafeiyupet_balanceLog(void) {
@@ -61,7 +62,8 @@ NSString *mowang_dafeiyupet_balanceSourceID(void) {
         os_log(mowang_dafeiyupet_balanceLog(),"BalanceQuery invalid source pinned=%d url=%d",pinned.length>0,url!=nil);
         [self finish:@"余额来源无效；请在余额监控选择平台或有效的 /v1/usage 记录。" success:NO]; return;
     }
-    NSDictionary *q=@{(__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,(__bridge id)kSecAttrService:@"com.mowang.aihubmanager",(__bridge id)kSecAttrAccount:account,(__bridge id)kSecReturnData:@YES,(__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,(__bridge id)kSecUseAuthenticationUI:(__bridge id)kSecUseAuthenticationUIFail};
+    LAContext *lac=[LAContext new]; lac.interactionNotAllowed=YES;
+    NSDictionary *q=@{(__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,(__bridge id)kSecAttrService:@"com.mowang.aihubmanager",(__bridge id)kSecAttrAccount:account,(__bridge id)kSecReturnData:@YES,(__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,(__bridge id)kSecUseAuthenticationContext:lac};
     CFTypeRef result=NULL; OSStatus status=SecItemCopyMatching((__bridge CFDictionaryRef)q,&result);
     id bytes=CFBridgingRelease(result);
     NSString *key=status==errSecSuccess && [bytes isKindOfClass:NSData.class]?[[NSString alloc] initWithData:bytes encoding:NSUTF8StringEncoding]:nil;

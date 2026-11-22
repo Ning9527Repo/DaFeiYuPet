@@ -10,7 +10,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = MowangDaFeiYuPet
 MowangDaFeiYuPet_FILES = $(wildcard Hooks/*.xm Sources/*.m)
 MowangDaFeiYuPet_CFLAGS = -fobjc-arc -I./Headers -I./Sources
-MowangDaFeiYuPet_FRAMEWORKS = UIKit Foundation CoreFoundation QuartzCore
+MowangDaFeiYuPet_FRAMEWORKS = UIKit Foundation CoreFoundation QuartzCore LocalAuthentication
 MowangDaFeiYuPet_LIBRARIES = substrate
 
 include $(THEOS_MAKE_PATH)/tweak.mk
